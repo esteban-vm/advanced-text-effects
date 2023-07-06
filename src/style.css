@@ -1,0 +1,44 @@
+@import 'normalize.css';
+
+@font-face {
+  font-family: 'Bangers';
+  src: url('/fonts/Bangers-Regular.ttf') format('truetype-variations');
+}
+
+* {
+  font-family: 'Bangers', cursive;
+  overflow: hidden;
+}
+
+canvas {
+  background-color: black;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+input {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: aliceblue;
+  width: 80%;
+  padding: 0.7rem;
+  border: 1px solid greenyellow;
+  background-color: #393939;
+  border-radius: 0.5rem;
+  z-index: 100;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder {
+    opacity: 0.7;
+  }
+
+  @media (pointer: coarse) {
+    top: 85%;
+  }
+}
