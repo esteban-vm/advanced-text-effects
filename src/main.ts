@@ -8,13 +8,12 @@ window.addEventListener('load', function () {
 
   const context = app.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
   const effect = new Effect(context, app.width, app.height)
-  effect.wrapText('Hello how are you')
+  effect.wrapText('Hello! How are you?')
   effect.render()
 
   const animate = () => {
-    context.clearRect(0, 0, app.width, app.height)
     effect.render()
-    requestAnimationFrame(animate)
+    this.requestAnimationFrame(animate)
   }
 
   animate()
@@ -22,7 +21,7 @@ window.addEventListener('load', function () {
   this.addEventListener('resize', () => {
     app.width = this.innerWidth
     app.height = this.innerHeight
-    effect.resize(app.width, app.height)
+    effect.setSize(app.width, app.height)
     effect.wrapText(effect.textInput.value)
   })
 })

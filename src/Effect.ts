@@ -2,33 +2,29 @@ import Particle from '@/Particle'
 
 export default class Effect {
   public context: CanvasRenderingContext2D
-  public canvasWidth: number
-  public canvasHeight: number
-  private textX: number
-  private textY: number
+  public canvasWidth!: number
+  public canvasHeight!: number
+  private textX!: number
+  private textY!: number
+  private maxTextWidth!: number
   private fontSize: number
   private lineHeight: number
-  private maxTextWidth: number
   private particles: Particle[]
   public gap: number
   public mouse: { radius: number; x: number; y: number }
   public textInput: HTMLInputElement
 
-  constructor(context: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) {
+  constructor(context: CanvasRenderingContext2D, ...args: [canvasWidth: number, canvasHeight: number]) {
     this.context = context
-    this.canvasWidth = canvasWidth
-    this.canvasHeight = canvasHeight
-    this.textX = this.canvasWidth / 2
-    this.textY = this.canvasHeight / 2
+    this.setSize(...args)
     this.fontSize = 130
     this.lineHeight = this.fontSize * 0.9
-    this.maxTextWidth = this.canvasWidth * 0.8
     this.particles = []
     this.gap = 2
     this.mouse = { radius: 20_000, x: 0, y: 0 }
     this.textInput = document.querySelector('input') as HTMLInputElement
-    this.onKeyUp()
-    this.onPointerMove()
+    this.handleTextInput()
+    this.handleMouseMove()
   }
 
   public wrapText(...args: [text: string]) {
@@ -47,7 +43,7 @@ export default class Effect {
   }
 
   private breakMultilineText(text: string) {
-    const linesArray: string[] = []
+    const lines: string[] = []
     const words = text.split(' ')
     let lineCounter = 0
     let line = ''
@@ -59,18 +55,18 @@ export default class Effect {
       } else {
         line = testLine
       }
-      linesArray[lineCounter] = line
+      lines[lineCounter] = line
     }
     const textHeight = this.lineHeight * lineCounter
     this.textY = this.canvasHeight / 2 - textHeight / 2
-    for (let index = 0; index < linesArray.length; index++) {
-      const args = [linesArray[index], this.textX, this.textY + index * this.lineHeight] as const
+    for (let index = 0; index < lines.length; index++) {
+      const args = [lines[index], this.textX, this.textY + index * this.lineHeight] as const
       this.context.fillText(...args)
       this.context.strokeText(...args)
     }
   }
 
-  private onKeyUp() {
+  private handleTextInput() {
     this.textInput.addEventListener('keyup', (event) => {
       if (event.code !== 'Space') {
         this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
@@ -79,7 +75,7 @@ export default class Effect {
     })
   }
 
-  private onPointerMove() {
+  private handleMouseMove() {
     window.addEventListener('pointermove', (event) => {
       this.mouse.x = event.x
       this.mouse.y = event.y
@@ -95,8 +91,8 @@ export default class Effect {
         const index = (y * this.canvasWidth + x) * 4
         const alpha = pixels[index + 3]
         if (alpha > 0) {
-          const { [index]: r, [index + 1]: g, [index + 2]: b } = pixels
-          const color = `rgb(${r}, ${g}, ${b})`
+          const { [index]: red, [index + 1]: green, [index + 2]: blue } = pixels
+          const color = `rgb(${red}, ${green}, ${blue})`
           this.particles.push(new Particle(this, x, y, color))
         }
       }
@@ -104,17 +100,18 @@ export default class Effect {
   }
 
   public render() {
+    this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
     for (const particle of this.particles) {
       particle.update()
       particle.draw()
     }
   }
 
-  public resize(width: number, height: number) {
-    this.canvasWidth = width
-    this.canvasHeight = height
+  public setSize(canvasWidth: number, canvasHeight: number) {
+    this.canvasWidth = canvasWidth
+    this.canvasHeight = canvasHeight
     this.textX = this.canvasWidth / 2
     this.textY = this.canvasHeight / 2
-    this.maxTextWidth = this.canvasWidth * 0.8
+    this.maxTextWidth = this.canvasWidth * 0.7
   }
 }
