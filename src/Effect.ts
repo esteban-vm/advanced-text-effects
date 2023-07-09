@@ -17,7 +17,8 @@ export default class Effect {
   constructor(context: CanvasRenderingContext2D, ...args: [canvasWidth: number, canvasHeight: number]) {
     this.context = context
     this.setSize(...args)
-    this.fontSize = 130
+    const isMobile = window.matchMedia('(any-pointer:coarse)').matches
+    this.fontSize = isMobile ? 80 : 130
     this.lineHeight = this.fontSize * 0.9
     this.particles = []
     this.gap = 2
@@ -43,10 +44,10 @@ export default class Effect {
   }
 
   private breakMultilineText(text: string) {
-    const lines: string[] = []
     const words = text.split(' ')
-    let lineCounter = 0
+    const lines: string[] = []
     let line = ''
+    let lineCounter = 0
     for (const word of words) {
       const testLine = line + word + ' '
       if (this.context.measureText(testLine).width > this.maxTextWidth) {
@@ -58,9 +59,9 @@ export default class Effect {
       lines[lineCounter] = line
     }
     const textHeight = this.lineHeight * lineCounter
-    this.textY = this.canvasHeight / 2 - textHeight / 2
+    this.textY -= textHeight / 2
     for (let index = 0; index < lines.length; index++) {
-      const args = [lines[index], this.textX, this.textY + index * this.lineHeight] as const
+      const args = [lines[index] ?? '', this.textX, this.textY + index * this.lineHeight] as const
       this.context.fillText(...args)
       this.context.strokeText(...args)
     }
@@ -84,11 +85,12 @@ export default class Effect {
 
   private convertToParticles() {
     this.particles = []
-    const pixels = this.context.getImageData(0, 0, this.canvasWidth, this.canvasHeight).data
-    this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
-    for (let y = 0; y < this.canvasHeight; y += this.gap) {
-      for (let x = 0; x < this.canvasWidth; x += this.gap) {
-        const index = (y * this.canvasWidth + x) * 4
+    const { canvasWidth, canvasHeight, gap } = this
+    const pixels = this.context.getImageData(0, 0, canvasWidth, canvasHeight).data
+    this.context.clearRect(0, 0, canvasWidth, canvasHeight)
+    for (let y = 0; y < canvasHeight; y += gap) {
+      for (let x = 0; x < canvasWidth; x += gap) {
+        const index = (y * canvasWidth + x) * 4
         const alpha = pixels[index + 3]
         if (alpha > 0) {
           const { [index]: red, [index + 1]: green, [index + 2]: blue } = pixels
@@ -112,6 +114,6 @@ export default class Effect {
     this.canvasHeight = canvasHeight
     this.textX = this.canvasWidth / 2
     this.textY = this.canvasHeight / 2
-    this.maxTextWidth = this.canvasWidth * 0.7
+    this.maxTextWidth = this.canvasWidth * 0.8
   }
 }

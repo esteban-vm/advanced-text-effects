@@ -43,11 +43,12 @@ export default class Particle {
   }
 
   public update() {
-    this.dx = this.effect.mouse.x - this.x
-    this.dy = this.effect.mouse.y - this.y
+    const { x: mouseX, y: mouseY, radius } = this.effect.mouse
+    this.dx = mouseX - this.x
+    this.dy = mouseY - this.y
     this.distance = this.dx ** 2 + this.dy ** 2
-    this.force = -this.effect.mouse.radius / this.distance
-    if (this.distance < this.effect.mouse.radius) {
+    this.force = -radius / this.distance
+    if (this.distance < radius) {
       this.angle = Math.atan2(this.dy, this.dx)
       this.vx += this.force * Math.cos(this.angle)
       this.vy += this.force * Math.sin(this.angle)
