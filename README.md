@@ -6,8 +6,6 @@
 
 - [Vite](https://v2.vitejs.dev/ 'Vite')
 - [TypeScript](https://www.typescriptlang.org/ 'TypeScript')
-- [ESLint](https://eslint.org/ 'ESLint')
-- [Prettier](https://prettier.io/ 'Prettier')
 
 ## License:
 
